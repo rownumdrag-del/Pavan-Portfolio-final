@@ -1183,7 +1183,12 @@ const VideoModal = ({ cat, onClose }) => {
   }, [onClose]);
   const video = cat.videos[active];
   const hasUrl = video && video.url && video.url.trim() !== "";
-  const embedSrc = hasUrl ? `${video.url}?autoplay=1&mute=1&rel=0` : "";
+  const embedSrc = useMemo(() => {
+    if (!hasUrl) return "";
+    // Google Drive preview links don't support common YouTube parameters like rel or mute
+    if (video.url.includes("drive.google.com")) return video.url;
+    return `${video.url}?autoplay=1&mute=1&rel=0`;
+  }, [hasUrl, video.url]);
 
   return (
     <AnimatePresence>
