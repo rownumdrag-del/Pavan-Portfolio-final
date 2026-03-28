@@ -1176,11 +1176,14 @@ const categories = [
 
 const VideoModal = ({ cat, onClose }) => {
   const [active, setActive] = useState(0);
+  const iframeRef = useRef(null);
+
   useEffect(() => {
     const onKey = (e) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
+
   const video = cat.videos[active];
   const hasUrl = video && video.url && video.url.trim() !== "";
   const embedSrc = useMemo(() => {
@@ -1189,6 +1192,14 @@ const VideoModal = ({ cat, onClose }) => {
     if (video.url.includes("drive.google.com")) return video.url;
     return `${video.url}?autoplay=1&mute=1&rel=0`;
   }, [hasUrl, video.url]);
+
+  const toggleFullscreen = () => {
+    const el = iframeRef.current;
+    if (!el) return;
+    if (el.requestFullscreen) el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    else if (el.msRequestFullscreen) el.msRequestFullscreen();
+  };
 
   return (
     <AnimatePresence>
@@ -1213,7 +1224,10 @@ const VideoModal = ({ cat, onClose }) => {
             <div className="modal-player" style={{ flex: "0 0 auto", display: "flex", alignItems: "center", justifyContent: "center", padding: "16px 12px 16px 20px", background: "#05070d" }}>
               <div className="modal-player-inner" style={{ height: "100%", aspectRatio: "9/16", maxHeight: "calc(95vh - 65px - 32px)", background: "#0b0e1a", borderRadius: 6, border: `1px solid ${cat.color}30`, overflow: "hidden", position: "relative" }}>
                 {hasUrl ? (
-                  <iframe key={embedSrc} src={embedSrc} title={video.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen style={{ width: "100%", height: "100%", border: "none", display: "block" }} />
+                  <>
+                    <iframe ref={iframeRef} key={embedSrc} src={embedSrc} title={video.title} allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowFullScreen style={{ width: "100%", height: "100%", border: "none", display: "block" }} />
+                    <button data-hover onClick={toggleFullscreen} style={{ position: "absolute", bottom: 12, right: 12, background: "rgba(0,0,0,0.6)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 4, color: "#fff", fontSize: "0.55rem", fontFamily: "var(--font-mono)", padding: "5px 10px", cursor: "pointer", backdropFilter: "blur(8px)", zIndex: 10 }}>⛶ FULLSCREEN</button>
+                  </>
                 ) : (
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", gap: 14 }}>
                     <div style={{ width: 56, height: 56, borderRadius: "50%", border: `2px solid ${cat.color}50`, display: "flex", alignItems: "center", justifyContent: "center" }}>
