@@ -778,12 +778,13 @@ const MouseLight = () => {
 /* ─────────────────────────────────────────
    HERO SECTION
 ───────────────────────────────────────── */
+const roles = ["VIDEO EDITOR", "MOTION GRAPHICS DESIGNER", "COLOR GRADING", "VFX ARTIST", "AD CREATIVE EDITOR", "VISUAL STORYTELLING", "AUDIO MIXING"];
+
 const HeroSection = ({ mouse }) => {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 600], [0, -100]);
   const opacity = useTransform(scrollY, [0, 500], [1, 0]);
 
-  const roles = ["VIDEO EDITOR", "MOTION GRAPHICS DESIGNER", "COLOR GRADING", "VFX ARTIST", "AD CREATIVE EDITOR", "VISUAL STORYTELLING", "AUDIO MIXING"];
   const [ri, setRi] = useState(0);
   useEffect(() => {
     const iv = setInterval(() => setRi(p => (p + 1) % roles.length), 2400);
